@@ -1,0 +1,129 @@
+-------------------------------------------------------------------------------
+			 				  Proiect PA 2021							   		   
+-------------------------------------------------------------------------------
+     Membrii echipei TripleA: Prisacaru Andrei, Hirt Andrei, Cioban Andrei     
+-------------------------------------------------------------------------------
+
+-> Instructiuni de compilare
+Pentru a porni interfatarea engine-xboard se poate da comanda: make start.
+
+-> Detalii despre structura proiectului
+
+.
+├── META-INF
+│   └── MANIFEST.MF
+├── Makefile
+├── README
+└── src
+    ├── Bishop.java
+    ├── Bot.java
+    ├── ChessBoard.java
+    ├── Constants.java
+    ├── Evaluation.java
+    ├── King.java
+    ├── Knight.java
+    ├── Main.java
+    ├── Pawn.java
+    ├── Piece.java
+    ├── Position.java
+    ├── Queen.java
+    ├── Receiver.java
+    ├── Rook.java
+    ├── Sender.java
+    ├── Square.java
+    └── State.java
+
+Pentru detalii legate de scopul fiecarei clase, acestea se gasesc in clasa
+corespunzatoare.
+
+ETAPA 1
+
+-> Observatii
+1) Pionii cu care muta engine-ul nostru sunt precizati prin intermediul unor 
+constante care semnifica coloana. La alegere, acestea se pot modifica in 
+fisierul Constants.java (PRESETBLACKPAWN, respectiv PRESETWHITEPAWN).
+
+2) Situatiile in care engine-ul va da resign sunt:
+	- pionul nu mai are mutari posibile (este blocat de o piesa sau nu poate
+		captura)
+	- pionul este capturat de jucatorul advers
+	- pionul este transformat in regina
+
+-> Distribuire sarcini
+
+Prisacaru Andrei:
+	- stabilirea comunicarii cu xboard
+	- creare Makefile
+
+Hirt Andrei:
+	- implementarea engine-ului cu miscarea unui pion
+	- crearea pieselor pe un pattern general si implementarea miscarilor
+		posibile ale unui pion
+
+Cioban Andrei:
+	- realizarea reprezentarii interne a tablei
+
+ETAPA 2
+
+-> Observatii
+1) Cu ajutorul unei metode numite isCheck, prin care ne asiguram ca nu se ajunge 
+la situatia de sah in urma mutarii curente, verificam validitatea mutarilor 
+generate de possibleMoves pentru fiecare piesa.
+2) Am implementat modalitatea de a promova o piesa in orice tip posibil prin 
+intermediul metodei promoteTo, iar metoda checkPromotion verifica daca se 
+poate face aceasta promovare.
+3) Am implementat metoda moveRandom care muta aleatoriu alegand din mutarile 
+posibile ale fiecarei piese si totodata prioritizeaza rocadele.
+4) Pentru verificarea mutarii En Passant am implementat o metoda checkENPASSANT 
+cu scopul validitatii mutarii. In plus, pentru o mai buna analiza a acestei 
+miscari trebuie decomentate liniile din:
+- clasa Receiver linia 37 si trebuie comentata linia 35,
+- clasa ChessBoard linia 208 si trebuie comentata linia 206,
+- clasa ChessBoard liniile 102 si 103.
+
+-> Distribuire sarcini
+
+Prisacaru Andrei:
+	- mutarea random a bot-ului
+	- validitatea miscarilor prin metoda isCheck
+
+Hirt Andrei:
+	- mutarile posibile pentru fiecare piesa
+
+Cioban Andrei:
+	- implementarea rocadelor si a En Passant-ului
+	- implmentarea posiblitatii de promovare a unui pion
+
+ETAPA 3
+
+-> Observatii
+1) Intrucat implementarea personala a algoritmului NegaMax cu taieri alpha-beta
+nu permitea un depth mai mare decat 4 din cauza reprezentarii interne a tablei
+de joc deoarece devenea prea lent, am adaugat Quiescence Search care ne ajuta
+sa evaluam mai bine starile finale de joc
+2) Exista situatii in care, ajungand spre ultimele miscari din cadrul unei
+partide, botul sa analizeze urmatoarea miscare pentru un interval mai lung de
+timp (circa 30s) (Nu se pune problema de neincadrare in limita de timp)
+
+-> Distribuire sarcini
+
+Prisacaru Andrei:
+- implementarea alpha-beta NegaMax + Quiescence pe baza mutarilor care
+   produc capturi sau dau sah
+- sortarea miscarilor posibile in vederea imbunatatirii taierilor alpha-beta
+
+Hirt Andrei:
+- implementarea reprezentarii unei stari de joc prin clasa State
+- implementarea verificarilor situatiilor care conduc la incheierea
+  partidei
+
+Cioban Andrei:
+- evaluarea starii de joc pe baza unor euristici definite:
+        - pozitionarea pieselor pe tabla
+        - numarul de sahuri date
+        - valoarea totala a pieselor data de numarul de miscari care conduc la
+        capturi, protejarea pieselor de aceeasi culoare, valoarea de baza a
+        unei piese
+        - numarul de penalizari in functie de expunerea regelui
+        - efectuarea uneia dintre rocade
+        - punctaj acordat pentru prezenta perechii de nebuni
